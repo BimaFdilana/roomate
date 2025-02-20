@@ -128,40 +128,76 @@ class QuizController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'questions' => 'required|array',
+            'questions.*.id' => 'nullable|exists:questions,id',
             'questions.*.question_text' => 'required|string',
             'questions.*.answers' => 'required|array',
+            'questions.*.answers.*.id' => 'nullable|exists:answers,id',
             'questions.*.answers.*.answer_text' => 'nullable|string',
-            'questions.*.answers.*.type' => 'nullable|in:text,image,image-text',
             'questions.*.answers.*.is_correct' => 'nullable|in:on',
             'questions.*.image' => 'nullable|file|image',
             'questions.*.answers.*.image' => 'nullable|file|image',
         ]);
 
+        // Ambil kuis yang akan diupdate
         $quiz = Quiz::findOrFail($quiz_id);
+
+        // Update informasi kuis
         $quiz->update([
             'title' => $validated['title'],
             'description' => $validated['description'],
         ]);
 
-        $quiz->questions()->delete();
+        // Ambil daftar ID pertanyaan yang dikirim dari form
+        $questionIds = collect($validated['questions'])->pluck('id')->filter()->toArray();
+
+        // Hapus pertanyaan yang tidak ada dalam form
+        $quiz->questions()->whereNotIn('id', $questionIds)->delete();
 
         foreach ($validated['questions'] as $questionData) {
-            $question = $quiz->questions()->create([
-                'question_text' => $questionData['question_text'],
-                'image_url' => isset($questionData['image']) ? $questionData['image']->store('answer', 'public') : null,
-            ]);
+            // Jika ada ID, update pertanyaan yang sudah ada
+            if (isset($questionData['id'])) {
+                $question = Question::findOrFail($questionData['id']);
+                $question->update([
+                    'question_text' => $questionData['question_text'],
+                    'image_url' => isset($questionData['image']) ? $questionData['image']->store('questions', 'public') : $question->image_url,
+                ]);
+            } else {
+                // Jika tidak ada ID, buat pertanyaan baru
+                $question = $quiz->questions()->create([
+                    'question_text' => $questionData['question_text'],
+                    'image_url' => isset($questionData['image']) ? $questionData['image']->store('questions', 'public') : null,
+                ]);
+            }
+
+            // Ambil daftar ID jawaban yang dikirim dari form
+            $answerIds = collect($questionData['answers'])->pluck('id')->filter()->toArray();
+
+            // Hapus jawaban yang tidak ada dalam form
+            $question->answers()->whereNotIn('id', $answerIds)->delete();
 
             foreach ($questionData['answers'] as $answerData) {
-                $question->answers()->create([
-                    'answer_text' => $answerData['answer_text'],
-                    'is_correct' => isset($answerData['is_correct']) && $answerData['is_correct'] === 'on' ? 1 : 0,
-                    'image_url' => isset($answerData['image']) ? $answerData['image']->store('questions', 'public') : null,
-                ]);
+                // Jika ada ID, update jawaban yang sudah ada
+                if (isset($answerData['id'])) {
+                    $answer = Answer::findOrFail($answerData['id']);
+                    $answer->update([
+                        'answer_text' => $answerData['answer_text'],
+                        'is_correct' => isset($answerData['is_correct']) && $answerData['is_correct'] === 'on' ? 1 : 0,
+                        'image_url' => isset($answerData['image']) ? $answerData['image']->store('answers', 'public') : $answer->image_url,
+                    ]);
+                } else {
+                    // Jika tidak ada ID, buat jawaban baru
+                    $question->answers()->create([
+                        'answer_text' => $answerData['answer_text'],
+                        'is_correct' => isset($answerData['is_correct']) && $answerData['is_correct'] === 'on' ? 1 : 0,
+                        'image_url' => isset($answerData['image']) ? $answerData['image']->store('answers', 'public') : null,
+                    ]);
+                }
             }
         }
 
         return redirect()->route('classroom.show', $classroom_id)->with('success', 'Kuis berhasil diperbarui!');
     }
+
 
 
    public function destroy($classroom_id, $quiz_id)
