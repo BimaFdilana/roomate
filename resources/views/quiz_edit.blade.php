@@ -11,7 +11,6 @@
                             method="POST" enctype="multipart/form-data">
                             @csrf
                             @method('PUT')
-
                             <div class="form-group mb-3">
                                 <label for="title">Judul Kuis</label>
                                 <input class="form-control" type="text" name="title" id="title"

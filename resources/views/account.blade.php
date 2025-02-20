@@ -21,6 +21,7 @@
                 </div>
             </div>
         </div>
+
         <div class="card border-0 rounded-3 bg-light">
             <div class="card-body p-2 p-md-3 px-lg-4">
                 <div></div>
@@ -114,7 +115,7 @@
                             <form action="{{ route('logout') }}" method="POST">
                                 @csrf
                                 <div class="d-flex justify-content-end gap-2"><button class="btn btn-danger rounded-3"type="submit">Keluar</button></div>
-                            </form>                            
+                            </form>
                         </div>
                     </div>
                 </div>
