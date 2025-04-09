@@ -54,7 +54,18 @@
                                     <span class="small">{{ $quiz->created_at->format('d M Y') }}</span>
                                 </div>
                                 <p class="mb-2">{{ $quiz->description }}</p>
+                                <p class="mb-2 fw-bold text-primary">
+                                    {{ floor($quiz->time_limit / 60) }} menit
+                                </p>
                             </div>
+                            <p class="mb-2">
+                                <span class="text-dark">Level:</span>
+                                <span class="fw-semibold {{ $levelClass }}">{{ ucfirst($quiz->level) }}</span>
+                            </p>
+                            <p class="mb-2">
+                                <span class="text-dark">Estimasi per soal:</span>
+                                <span class="fw-semibold text-info">{{ $formattedEstimatedTime }}</span>
+                            </p>
                             <div class="d-flex mb-3">
                                 <span class="bg-dark bg-opacity-10 p-1 px-2 rounded-3 d-flex gap-2 align-items-center">
                                     <span class="fs-6 d-flex align-items-center gap-1 fw-bold">Soal:</span>

@@ -13,8 +13,10 @@ return new class extends Migration
             $table->foreignId('classroom_id')->constrained('classrooms');
             $table->string('title');
             $table->text('description');
+            $table->integer('time_limit')->nullable();
+            $table->string('level')->nullable();
             $table->timestamps();
-        });   
+        });
     }
     public function down(): void
     {

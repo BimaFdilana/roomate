@@ -3,15 +3,19 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 
 class SettingController extends Controller
 {
     public function index()
     {
         $user = Auth::user();
-        // @dd($user);
+
+        // Debug sementara untuk cek apakah instance-nya benar
+        // dd(get_class($user)); // Harusnya: App\Models\User
+
         return view('account', compact('user'));
     }
 
@@ -26,6 +30,11 @@ class SettingController extends Controller
 
         $user = Auth::user();
 
+        // Pastikan ini object User Eloquent
+        if (!$user instanceof \App\Models\User) {
+            return redirect()->back()->withErrors(['user' => 'User tidak valid.']);
+        }
+
         $user->name = $request->name;
         $user->phone = $request->phone;
         $user->email = $request->email;
@@ -35,7 +44,7 @@ class SettingController extends Controller
             $user->photos = $path;
         }
 
-        $user->save();
+        $user->save(); // error terjadi di sini kalau bukan instance Eloquent
 
         return redirect()->back()->with('success', 'Profil berhasil diperbarui.');
     }
@@ -49,6 +58,12 @@ class SettingController extends Controller
 
         $user = Auth::user();
 
+        // Pastikan user adalah instance dari model
+        if (!$user instanceof \App\Models\User) {
+            return redirect()->back()->withErrors(['user' => 'User tidak valid.']);
+        }
+
+        // Cek apakah password lama cocok
         if (!Hash::check($request->current_password, $user->password)) {
             return redirect()->back()->withErrors(['current_password' => 'Kata sandi saat ini salah.']);
         }
@@ -58,4 +73,5 @@ class SettingController extends Controller
 
         return redirect()->back()->with('success', 'Kata sandi berhasil diperbarui.');
     }
+
 }

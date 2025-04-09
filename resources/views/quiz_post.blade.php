@@ -17,6 +17,27 @@
                                 <input class="form-control" type="text" name="title" id="title" required>
                             </div>
                             <div class="form-group mb-3">
+                                <label for="level">Tingkat Kesulitan</label>
+                                <select name="level" id="level" class="form-control" required>
+                                    <option value="" disabled selected>Pilih Tingkat Kesulitan</option>
+                                    <option value="Mudah">Mudah</option>
+                                    <option value="Sedang">Sedang</option>
+                                    <option value="Sulit">Sulit</option>
+                                </select>
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="time_limit">Durasi Kuis (1 Menit per Soal)</label>
+                                <select name="time_limit" id="time_limit" class="form-control" required>
+                                    <option value="" disabled selected>Pilih Durasi</option>
+                                    <option value="600">10 menit</option>
+                                    <option value="1200">20 menit</option>
+                                    <option value="1500">25 menit</option>
+                                    <option value="3000">50 menit</option>
+                                    <option value="6000">100 menit</option>
+                                    <option value="7200">120 menit</option>
+                                </select>
+                            </div>
+                            <div class="form-group mb-3">
                                 <label for="description">Deskripsi</label>
                                 <textarea class="form-control" name="description" id="description" rows="4" required></textarea>
                             </div>

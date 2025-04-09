@@ -32,11 +32,29 @@ class PostController extends Controller
 
             $allResults = $quiz->results;
 
+            $levelClass = match ($quiz->level) {
+                'Mudah' => 'text-success',
+                'Sedang' => 'text-warning',
+                'Sulit' => 'text-danger',
+                default => 'text-light',
+            };
+
+            $estimatedTimePerQuestionInSeconds = $quiz->questions->count() > 0
+                ? round($quiz->time_limit / $quiz->questions->count())
+                : 0;
+
+            $estimatedMinutes = floor($estimatedTimePerQuestionInSeconds / 60);
+            $estimatedSeconds = $estimatedTimePerQuestionInSeconds % 60;
+
+            $formattedEstimatedTime = $estimatedMinutes . ' menit ' . str_pad($estimatedSeconds, 2, '0', STR_PAD_LEFT) . ' detik';
+
             return view('post_detail', [
                 'quiz' => $quiz,
                 'hasTakenQuiz' => $hasTakenQuiz,
                 'quizResult' => $quizResult,
                 'allResults' => $allResults,
+                'levelClass' => $levelClass,
+                'formattedEstimatedTime' => $formattedEstimatedTime,
             ]);
         } else {
             abort(404, 'Tipe postingan tidak valid.');

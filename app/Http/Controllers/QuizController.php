@@ -20,11 +20,12 @@ class QuizController extends Controller
 
     public function store(Request $request, $classroom_id)
     {
-        // @dd($request->all());
         $validated = $request->validate([
             'classroom_id' => 'required|exists:classrooms,id',
             'title' => 'required|string|max:255',
             'description' => 'required|string',
+            'time_limit' => 'required|integer|min:5',
+            'level' => 'required',
             'questions' => 'required|array',
             'questions.*.question_text' => 'required|string',
             'questions.*.answers' => 'required|array',
@@ -39,6 +40,8 @@ class QuizController extends Controller
             'classroom_id' => $validated['classroom_id'],
             'title' => $validated['title'],
             'description' => $validated['description'],
+            'time_limit' => $validated['time_limit'],
+            'level' => $validated['level'],
         ]);
 
         foreach ($validated['questions'] as $questionData) {
@@ -127,6 +130,8 @@ class QuizController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
+            'time_limit' => 'required|integer',
+            'level' => 'required',
             'questions' => 'required|array',
             'questions.*.id' => 'nullable|exists:questions,id',
             'questions.*.question_text' => 'required|string',
@@ -145,6 +150,8 @@ class QuizController extends Controller
         $quiz->update([
             'title' => $validated['title'],
             'description' => $validated['description'],
+            'time_limit' => $validated['time_limit'],
+            'level' => $validated['level'],
         ]);
 
         // Ambil daftar ID pertanyaan yang dikirim dari form

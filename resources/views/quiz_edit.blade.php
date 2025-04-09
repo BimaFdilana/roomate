@@ -17,6 +17,36 @@
                                     value="{{ $quiz->title }}" required>
                             </div>
                             <div class="form-group mb-3">
+                                <label for="level">Tingkat Kesulitan</label>
+                                <select name="level" id="level" class="form-control" required>
+                                    <option value="" disabled {{ $quiz->level == null ? 'selected' : '' }}>Pilih
+                                        Tingkat Kesulitan</option>
+                                    <option value="Mudah" {{ $quiz->level == 'Mudah' ? 'selected' : '' }}>Mudah</option>
+                                    <option value="Sedang" {{ $quiz->level == 'Sedang' ? 'selected' : '' }}>Sedang</option>
+                                    <option value="Sulit" {{ $quiz->level == 'Sulit' ? 'selected' : '' }}>Sulit</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label for="time_limit">Durasi Kuis (1 Menit per Soal)</label>
+                                <select name="time_limit" id="time_limit" class="form-control" required>
+                                    <option value="" disabled {{ $quiz->time_limit == null ? 'selected' : '' }}>Pilih
+                                        Durasi</option>
+                                    <option value="600" {{ $quiz->time_limit == 600 ? 'selected' : '' }}>10 menit
+                                    </option>
+                                    <option value="1200" {{ $quiz->time_limit == 1200 ? 'selected' : '' }}>20 menit
+                                    </option>
+                                    <option value="1500" {{ $quiz->time_limit == 1500 ? 'selected' : '' }}>25 menit
+                                    </option>
+                                    <option value="3000" {{ $quiz->time_limit == 3000 ? 'selected' : '' }}>50 menit
+                                    </option>
+                                    <option value="6000" {{ $quiz->time_limit == 6000 ? 'selected' : '' }}>100 menit
+                                    </option>
+                                    <option value="7200" {{ $quiz->time_limit == 7200 ? 'selected' : '' }}>120 menit
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="form-group mb-3">
                                 <label for="description">Deskripsi</label>
                                 <textarea class="form-control" name="description" id="description" rows="4" required>{{ $quiz->description }}</textarea>
                             </div>
