@@ -4,49 +4,11 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Kuis Interaktif</title>
+    <title> Kuis {{ $quiz->title }}</title>
     <link rel="stylesheet" href="{{ asset('assets/bootstrap/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.5.5/dist/sweetalert2.min.css">
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-
-        .progress-bar {
-            transition: width 0.5s ease;
-        }
-
-        button.btn-answer {
-            transition: all 0.2s ease-in-out;
-        }
-
-        button.btn-answer:hover {
-            transform: scale(1.02);
-            background-color: #0d6efd;
-            color: white;
-        }
-
-        .btn-restart {
-            background-color: #6c757d;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: bold;
-            transition: background-color 0.3s ease;
-        }
-
-        .btn-restart:hover {
-            background-color: #5a6268;
-        }
-
-
-        #timer {
-            font-family: monospace;
-            letter-spacing: 1px;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ asset('assets/css/start.css') }}">
 </head>
 
 <body class="bg-light min-vh-100 d-flex align-items-center justify-content-center">
@@ -181,29 +143,43 @@
             const answersContainer = document.getElementById("answers-container");
             answersContainer.innerHTML = "";
 
-            question.answers.forEach((answer) => {
+            const optionClasses = ['answer-option-a', 'answer-option-b', 'answer-option-c', 'answer-option-d'];
+
+            question.answers.forEach((answer, index) => {
                 const answerDiv = document.createElement("div");
                 answerDiv.classList.add("col");
 
-                let answerContent =
-                    `<button class="btn btn-answer btn-outline-secondary w-100 py-2 px-3 shadow-sm" onclick="checkAnswer(${answer.isCorrect})">`;
+                const label = String.fromCharCode(65 + index); // 'A', 'B', ...
+
+                let answerContent = `
+            <div class="answer-card p-3 ${optionClasses[index]} text-dark" onclick="checkAnswer(${answer.isCorrect})" role="button">
+                <div class="d-flex flex-wrap align-items-start gap-2">
+                    <div class="answer-label">${label}.</div>
+                    <div class="answer-text-wrapper">
+        `;
+
+                if (answer.text) {
+                    answerContent += `<p class="mb-1">${answer.text}</p>`;
+                }
 
                 if (answer.image) {
                     answerContent +=
-                        `<img src="{{ asset('storage/${answer.image}') }}" class="img-fluid rounded mb-2" style="max-height: 100px;">`;
+                        `<img src="{{ asset('storage/${answer.image}') }}" class="img-fluid rounded answer-img mt-2">`;
                 }
 
-                if (answer.text) {
-                    answerContent += `<p class="m-0">${answer.text}</p>`;
-                }
+                answerContent += `
+                    </div>
+                </div>
+            </div>
+        `;
 
-                answerContent += `</button>`;
                 answerDiv.innerHTML = answerContent;
                 answersContainer.appendChild(answerDiv);
             });
 
             updateProgressBar();
         }
+
 
         function checkAnswer(isCorrect) {
             if (isCorrect) {
@@ -238,23 +214,38 @@
         }
 
         function showResult() {
-            document.getElementById("quiz-container").classList.add("d-none");
-            document.getElementById("result-container").classList.remove("d-none");
-            document.getElementById("score-text").innerText = `Skor Anda: ${score} dari 100`;
-            saveResult();
-            confetti({
-                particleCount: 1000,
-                angle: -90,
-                spread: 180,
-                startVelocity: 70,
-                gravity: 1,
-                origin: {
-                    x: 0.5,
-                    y: -1
-                },
-                zIndex: 9999
+            Swal.fire({
+                title: '🎉 Selamat!',
+                text: `Kamu telah menyelesaikan kuis! Skor kamu: ${score} dari 100`,
+                imageUrl: 'https://cdn-icons-png.flaticon.com/512/3159/3159066.png',
+                imageWidth: 100,
+                imageHeight: 100,
+                background: '#fff3cd',
+                confirmButtonColor: '#ff6f61',
+                confirmButtonText: 'Lihat Hasil 🎯',
+                customClass: {
+                    popup: 'rounded-4 shadow-lg'
+                }
+            }).then(() => {
+                document.getElementById("quiz-container").classList.add("d-none");
+                document.getElementById("result-container").classList.remove("d-none");
+                document.getElementById("score-text").innerText = `Skor Kamu: ${score} dari 100`;
+                saveResult();
+                confetti({
+                    particleCount: 1000,
+                    angle: -90,
+                    spread: 180,
+                    startVelocity: 70,
+                    gravity: 1,
+                    origin: {
+                        x: 0.5,
+                        y: -1
+                    },
+                    zIndex: 9999
+                });
             });
         }
+
 
         function saveResult() {
             fetch('/save-quiz-result', {
