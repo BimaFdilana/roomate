@@ -51,7 +51,7 @@
                             </span>
                             <hr class="w-100">
                         </div>
-                    </form>                    
+                    </form>
                 </div>
             </div>
         </div>
